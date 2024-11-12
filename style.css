@@ -1,6 +1,5 @@
-/* Barra de Acessibilidade */
 #accessibility-bar {
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;
@@ -9,6 +8,7 @@
     padding: 10px;
     text-align: center;
 }
+
 
 #accessibility-bar button {
     background-color: #555;
