@@ -1,35 +1,37 @@
 // Limites de tamanho de fonte
 var minFontSize = 12; // tamanho mínimo da fonte em pixels
 var maxFontSize = 24; // tamanho máximo da fonte em pixels
-var defaultFontSize = 16; // tamanho original da fonte em pixels
 
 // Função para aumentar o tamanho da fonte com limite
 function increaseFontSize() {
-    var content = document.getElementById('content');
-    var style = window.getComputedStyle(content, null).getPropertyValue('font-size');
-    var currentSize = parseFloat(style);
-    if (currentSize < maxFontSize) {
-        content.style.fontSize = (currentSize + 2) + 'px';
-        localStorage.setItem('fontSize', (currentSize + 2) + 'px'); // Salva no localStorage
-    }
+    document.querySelectorAll('.adjustable-font *').forEach((element) => {
+        var style = window.getComputedStyle(element, null).getPropertyValue('font-size');
+        var currentSize = parseFloat(style);
+        if (currentSize < maxFontSize) {
+            element.style.fontSize = (currentSize + 2) + 'px';
+        }
+    });
+    localStorage.setItem('fontSize', 'increase'); // Salva o estado no localStorage
 }
 
 // Função para diminuir o tamanho da fonte com limite
 function decreaseFontSize() {
-    var content = document.getElementById('content');
-    var style = window.getComputedStyle(content, null).getPropertyValue('font-size');
-    var currentSize = parseFloat(style);
-    if (currentSize > minFontSize) {
-        content.style.fontSize = (currentSize - 2) + 'px';
-        localStorage.setItem('fontSize', (currentSize - 2) + 'px'); // Salva no localStorage
-    }
+    document.querySelectorAll('.adjustable-font *').forEach((element) => {
+        var style = window.getComputedStyle(element, null).getPropertyValue('font-size');
+        var currentSize = parseFloat(style);
+        if (currentSize > minFontSize) {
+            element.style.fontSize = (currentSize - 2) + 'px';
+        }
+    });
+    localStorage.setItem('fontSize', 'decrease'); // Salva o estado no localStorage
 }
 
-// Função para resetar o tamanho da fonte para o original
+// Função para resetar o tamanho da fonte para o original do CSS
 function resetFontSize() {
-    var content = document.getElementById('content');
-    content.style.fontSize = defaultFontSize + 'px';
-    localStorage.setItem('fontSize', defaultFontSize + 'px'); // Salva no localStorage
+    document.querySelectorAll('.adjustable-font *').forEach((element) => {
+        element.style.fontSize = ''; // Remove o estilo inline, retornando ao CSS original
+    });
+    localStorage.removeItem('fontSize'); // Remove o estado do localStorage
 }
 
 // Função para alternar o modo de alto contraste
@@ -37,29 +39,33 @@ function toggleHighContrast() {
     var body = document.body;
     body.classList.remove('low-contrast'); // Remove baixo contraste, se estiver ativado
     body.classList.toggle('high-contrast');
-    localStorage.setItem('contrastMode', 'high'); // Salva no localStorage
+    localStorage.setItem('contrastMode', body.classList.contains('high-contrast') ? 'high' : 'default');
+}
+
+// Função para alternar o modo de alto contraste
+function toggleHighContrast() {
+    var body = document.body;
+    body.classList.remove('low-contrast'); // Remove baixo contraste, se estiver ativado
+    body.classList.toggle('high-contrast'); // Alterna alto contraste
+    localStorage.setItem('contrastMode', body.classList.contains('high-contrast') ? 'high' : 'default'); // Salva o estado no localStorage
 }
 
 // Função para alternar o modo de baixo contraste
 function toggleLowContrast() {
     var body = document.body;
     body.classList.remove('high-contrast'); // Remove alto contraste, se estiver ativado
-    body.classList.toggle('low-contrast');
-    localStorage.setItem('contrastMode', 'low'); // Salva no localStorage
-}
-
-// Função para alternar entre fontes
-function toggleFont() {
-    var body = document.body;
-    body.classList.toggle('alternative-font');
-    localStorage.setItem('font', body.classList.contains('alternative-font') ? 'alternative' : 'default'); // Salva no localStorage
+    body.classList.toggle('low-contrast'); // Alterna baixo contraste
+    localStorage.setItem('contrastMode', body.classList.contains('low-contrast') ? 'low' : 'default'); // Salva o estado no localStorage
 }
 
 // Ao carregar a página, verificamos as configurações salvas no localStorage
-window.onload = function() {
+window.onload = function () {
     // Recuperar tamanho da fonte
-    if (localStorage.getItem('fontSize')) {
-        document.getElementById('content').style.fontSize = localStorage.getItem('fontSize');
+    const fontSizeState = localStorage.getItem('fontSize');
+    if (fontSizeState === 'increase') {
+        increaseFontSize();
+    } else if (fontSizeState === 'decrease') {
+        decreaseFontSize();
     }
 
     // Recuperar modo de contraste
